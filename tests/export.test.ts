@@ -14,6 +14,7 @@ const recording: Recording = {
   skipSummary: 0,
   createdAt: "2026-07-07T18:20:00Z",
   updatedAt: "2026-07-07T18:25:00Z",
+  cloudSyncedAt: null,
 };
 
 const utterances: Utterance[] = [

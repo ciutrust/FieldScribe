@@ -1,7 +1,7 @@
 import { and, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
-import { speakers } from "@/db/schema";
+import { db, nowIso } from "@/lib/db";
+import { recordings, speakers } from "@/db/schema";
 import { getRecording } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
@@ -22,5 +22,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     .set({ displayName: name })
     .where(and(eq(speakers.recordingId, id), eq(speakers.speakerLabel, label)))
     .run();
+  // Renames change what the cloud mirror should show — mark the recording dirty.
+  db.update(recordings).set({ updatedAt: nowIso() }).where(eq(recordings.id, id)).run();
   return NextResponse.json({ ok: true });
 }

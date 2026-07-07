@@ -20,6 +20,10 @@ def connect() -> sqlite3.Connection:
     conn.execute("PRAGMA busy_timeout = 5000")
     conn.execute("PRAGMA foreign_keys = ON")
     conn.executescript(config.DDL_PATH.read_text())
+    # Columns added after v1 (SQLite has no ADD COLUMN IF NOT EXISTS).
+    cols = {row["name"] for row in conn.execute("PRAGMA table_info(recordings)")}
+    if "cloud_synced_at" not in cols:
+        conn.execute("ALTER TABLE recordings ADD COLUMN cloud_synced_at TEXT")
     conn.commit()
     return conn
 

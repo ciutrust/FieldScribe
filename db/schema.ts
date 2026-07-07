@@ -25,6 +25,7 @@ export const recordings = sqliteTable("recordings", {
   skipSummary: integer("skip_summary").notNull().default(0),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),
+  cloudSyncedAt: text("cloud_synced_at"),
 });
 
 export const utterances = sqliteTable(

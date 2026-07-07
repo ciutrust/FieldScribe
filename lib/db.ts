@@ -25,6 +25,11 @@ function createDb() {
   sqlite.pragma("foreign_keys = ON");
   const ddl = fs.readFileSync(path.join(process.cwd(), "db", "ddl.sql"), "utf8");
   sqlite.exec(ddl);
+  // Columns added after v1 (SQLite has no ADD COLUMN IF NOT EXISTS).
+  const cols = sqlite.pragma("table_info(recordings)") as { name: string }[];
+  if (!cols.some((c) => c.name === "cloud_synced_at")) {
+    sqlite.exec("ALTER TABLE recordings ADD COLUMN cloud_synced_at TEXT");
+  }
   return drizzle(sqlite, { schema });
 }
 
