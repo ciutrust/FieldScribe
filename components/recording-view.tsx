@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, RotateCcw } from "lucide-react";
+import { ArrowLeft, Download, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import type { Recording, Speaker, Summary, Utterance } from "@/db/schema";
 import { Button } from "@/components/ui/button";
@@ -55,6 +55,18 @@ export function RecordingView({ id }: { id: string }) {
       if (timer.current) clearTimeout(timer.current);
     };
   }, [refresh]);
+
+  // Deep link from search results: /r/<id>?t=<seconds> positions the playhead.
+  const deepLinked = useRef(false);
+  useEffect(() => {
+    if (deepLinked.current || !detail) return;
+    const t = Number(new URLSearchParams(window.location.search).get("t"));
+    if (isFinite(t) && t > 0 && audioRef.current) {
+      audioRef.current.currentTime = t;
+      setCurrentTime(t);
+    }
+    deepLinked.current = true;
+  }, [detail]);
 
   const seek = useCallback((sec: number) => {
     const audio = audioRef.current;
@@ -125,6 +137,20 @@ export function RecordingView({ id }: { id: string }) {
             <Button size="sm" variant="secondary" onClick={retry}>
               <RotateCcw className="size-3.5" /> Retry
             </Button>
+          )}
+          {utterances.length > 0 && (
+            <div className="flex items-center gap-1.5">
+              <Button size="sm" variant="secondary" asChild>
+                <a href={`/api/recordings/${id}/export/md`} download>
+                  <Download className="size-3.5" /> Markdown
+                </a>
+              </Button>
+              <Button size="sm" variant="secondary" asChild>
+                <a href={`/api/recordings/${id}/export/srt`} download>
+                  <Download className="size-3.5" /> SRT
+                </a>
+              </Button>
+            </div>
           )}
         </div>
       </div>

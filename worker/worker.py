@@ -47,16 +47,21 @@ def process(conn, recording) -> None:
         db.set_status(conn, rec_id, "summarizing")
         from fs_worker import summarize
 
-        result = summarize.summarize(
-            utterances,
-            {label: f"Speaker {i + 1}" for i, label in enumerate(labels)},
-            config.ANTHROPIC_API_KEY,
-        )
+        try:
+            result = summarize.summarize(
+                utterances,
+                {label: f"Speaker {i + 1}" for i, label in enumerate(labels)},
+                config.ANTHROPIC_API_KEY,
+            )
+        except Exception as e:  # summary is best-effort; the transcript is the product
+            traceback.print_exc()
+            log(f"  summary failed (transcript kept): {e}")
+            result = None
         if result is not None:
             summary_md, actions, model = result
             db.save_summary(conn, rec_id, summary_md, json.dumps(actions), model)
             log("  summary saved")
-        else:
+        elif not config.ANTHROPIC_API_KEY:
             log("  summary skipped (no ANTHROPIC_API_KEY)")
 
     db.set_status(conn, rec_id, "done")

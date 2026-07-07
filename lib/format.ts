@@ -8,9 +8,10 @@ export function formatDuration(totalSec: number | null | undefined): string {
   return `${m}:${String(s).padStart(2, "0")}`;
 }
 
-/** Timestamp inside a recording, always mm:ss (or h:mm:ss past an hour). */
+/** Timestamp inside a recording, always mm:ss (or h:mm:ss past an hour).
+ * Floors rather than rounds — 6.9s is still second 6. */
 export function formatClock(sec: number): string {
-  return formatDuration(Math.max(0, sec));
+  return formatDuration(Math.floor(Math.max(0, sec)));
 }
 
 export function formatDate(iso: string): string {

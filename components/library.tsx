@@ -2,9 +2,12 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { Search } from "lucide-react";
 import type { RecordingListItem } from "@/lib/queries";
+import type { SearchHit } from "@/lib/search-shared";
 import { formatDate, formatDuration } from "@/lib/format";
 import { isActive } from "@/lib/status";
+import { SearchResults } from "@/components/search-results";
 import { StatusChip } from "@/components/status-chip";
 import { UploadZone } from "@/components/upload-zone";
 
@@ -14,6 +17,26 @@ const SLOW_POLL_MS = 12000;
 export function Library() {
   const [recordings, setRecordings] = useState<RecordingListItem[] | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout>>(null);
+  const [query, setQuery] = useState("");
+  const [hits, setHits] = useState<SearchHit[] | null>(null);
+  const searchTimer = useRef<ReturnType<typeof setTimeout>>(null);
+
+  // Debounced full-text search across all transcripts.
+  useEffect(() => {
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    if (!query.trim()) {
+      setHits(null);
+      return;
+    }
+    searchTimer.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(query.trim())}`);
+        setHits(((await res.json()) as { results: SearchHit[] }).results);
+      } catch {
+        setHits([]);
+      }
+    }, 250);
+  }, [query]);
 
   const refresh = useCallback(async () => {
     if (timer.current) clearTimeout(timer.current);
@@ -46,6 +69,20 @@ export function Library() {
     <div className="space-y-6">
       <UploadZone onUploaded={refresh} hero={recordings.length === 0} />
       {recordings.length > 0 && (
+        <div className="relative">
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search every transcript…"
+            className="w-full rounded-lg border bg-card py-2.5 pl-9 pr-3 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-flare/50"
+            aria-label="Search transcripts"
+          />
+        </div>
+      )}
+      {query.trim() && hits !== null ? (
+        <SearchResults query={query.trim()} hits={hits} />
+      ) : recordings.length > 0 && (
         <ul className="divide-y divide-border rounded-xl border">
           {recordings.map((r) => (
             <li key={r.id}>
