@@ -1,0 +1,22 @@
+[project]
+name = "worker"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "anthropic>=0.116.0",
+    "huggingface-hub>=1.22.0",
+    "mlx-whisper>=0.4.3",
+    "pyannote-audio>=3.1,<4",
+    # pyannote 3.x needs torchaudio.list_audio_backends, removed in torch 2.9
+    "torch>=2.5,<2.9",
+    "torchaudio>=2.5,<2.9",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
