@@ -71,6 +71,7 @@ def main() -> int:
     log(f"watching {config.DB_PATH} (model={config.WHISPER_MODEL})")
 
     while True:
+        config.refresh()  # pick up tokens pasted into .env without a restart
         recording = db.claim_next(conn)
         if recording is None:
             time.sleep(config.POLL_SECONDS)
