@@ -8,9 +8,10 @@ dependencies = [
     "huggingface-hub>=0.30,<1.0",
     "mlx-whisper>=0.4.3",
     "pyannote-audio>=3.1,<4",
-    # pyannote 3.x needs torchaudio.list_audio_backends, removed in torch 2.9
-    "torch>=2.5,<2.9",
-    "torchaudio>=2.5,<2.9",
+    # pyannote 3.x: needs torchaudio.list_audio_backends (removed in 2.9) AND
+    # pre-2.6 torch.load pickling defaults (weights_only=True breaks its checkpoints)
+    "torch>=2.5,<2.6",
+    "torchaudio>=2.5,<2.6",
 ]
 
 [dependency-groups]
