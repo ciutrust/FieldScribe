@@ -1,0 +1,84 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { ArrowLeft, MonitorSpeaker } from "lucide-react";
+import { SummaryPanel, Heading } from "@/components/summary-panel";
+import { Timeline } from "@/components/timeline";
+import { Transcript } from "@/components/transcript";
+import { createClient } from "@/lib/supabase/server";
+import type { FsRecording, FsSpeaker, FsSummary, FsUtterance } from "@/lib/types";
+import { defaultSpeakerName, formatDate, formatDuration, speakerBg } from "@/lib/format";
+import { cn } from "@/lib/utils";
+
+export const dynamic = "force-dynamic";
+
+export default async function RecordingPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const supabase = await createClient();
+
+  const [recordingRes, utterancesRes, speakersRes, summaryRes] = await Promise.all([
+    supabase.from("fs_recordings").select("*").eq("id", id).maybeSingle(),
+    supabase.from("fs_utterances").select("*").eq("recording_id", id).order("start_sec"),
+    supabase.from("fs_speakers").select("*").eq("recording_id", id).order("position"),
+    supabase.from("fs_summaries").select("*").eq("recording_id", id).maybeSingle(),
+  ]);
+
+  const recording = recordingRes.data as FsRecording | null;
+  if (!recording) notFound();
+  const utterances = (utterancesRes.data ?? []) as FsUtterance[];
+  const speakers = (speakersRes.data ?? []) as FsSpeaker[];
+  const summary = (summaryRes.data as FsSummary | null) ?? null;
+
+  const orderedLabels = speakers.map((s) => s.speaker_label);
+  const names: Record<string, string> = {};
+  speakers.forEach((s) => {
+    names[s.speaker_label] = s.display_name?.trim() || defaultSpeakerName(s.position);
+  });
+
+  return (
+    <div className="space-y-6">
+      <div className="min-w-0 space-y-1">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1 font-mono text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ArrowLeft className="size-3" /> library
+        </Link>
+        <h1 className="truncate text-xl font-semibold tracking-tight">{recording.title}</h1>
+        <p className="font-mono text-[11px] text-muted-foreground">
+          {formatDate(recording.recorded_at)}
+          {recording.duration_sec != null && <> · {formatDuration(recording.duration_sec)}</>}
+          {recording.language && <> · {recording.language}</>}
+        </p>
+      </div>
+
+      <Timeline
+        utterances={utterances}
+        orderedLabels={orderedLabels}
+        names={names}
+        durationSec={recording.duration_sec ?? 0}
+      />
+
+      <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_260px]">
+        <Transcript utterances={utterances} orderedLabels={orderedLabels} names={names} />
+        <aside className="space-y-6 md:order-last">
+          <section className="space-y-2">
+            <Heading>Speakers</Heading>
+            <ul className="space-y-1.5">
+              {speakers.map((s) => (
+                <li key={s.speaker_label} className="flex items-center gap-2.5 text-sm">
+                  <span className={cn("size-2.5 shrink-0 rounded-full", speakerBg(s.position))} />
+                  {names[s.speaker_label]}
+                </li>
+              ))}
+            </ul>
+          </section>
+          <SummaryPanel summary={summary} />
+          <p className="flex items-start gap-2 rounded-lg border border-dashed px-3 py-2.5 text-xs text-muted-foreground">
+            <MonitorSpeaker className="mt-0.5 size-3.5 shrink-0" />
+            Audio playback and edits live on the Mac Studio.
+          </p>
+        </aside>
+      </div>
+    </div>
+  );
+}

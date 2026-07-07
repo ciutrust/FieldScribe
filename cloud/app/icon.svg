@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="#0C0F14"/>
+  <rect x="1" y="1" width="62" height="62" rx="13" fill="none" stroke="#1A2029" stroke-width="2"/>
+  <!-- waveform: one speaker's run pulled out in burgundy -->
+  <g stroke="#8B93A1" stroke-width="3.2" stroke-linecap="round" opacity="0.6">
+    <line x1="12" y1="28" x2="12" y2="36"/>
+    <line x1="18" y1="24" x2="18" y2="40"/>
+    <line x1="24" y1="30" x2="24" y2="34"/>
+  </g>
+  <g stroke="#C04B5C" stroke-width="3.2" stroke-linecap="round">
+    <line x1="30" y1="18" x2="30" y2="46"/>
+    <line x1="36" y1="24" x2="36" y2="40"/>
+    <line x1="42" y1="14" x2="42" y2="50"/>
+  </g>
+  <g stroke="#EDEAE3" stroke-width="3.2" stroke-linecap="round" opacity="0.85">
+    <line x1="48" y1="26" x2="48" y2="38"/>
+    <line x1="54" y1="30" x2="54" y2="34"/>
+  </g>
+</svg>

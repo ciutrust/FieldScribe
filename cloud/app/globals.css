@@ -1,0 +1,105 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains);
+  --font-heading: var(--font-bricolage);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-flare: var(--flare);
+  --color-flare-deep: var(--flare-deep);
+  --color-ok: var(--ok);
+  --color-danger: var(--danger);
+  --color-speaker-1: var(--speaker-1);
+  --color-speaker-2: var(--speaker-2);
+  --color-speaker-3: var(--speaker-3);
+  --color-speaker-4: var(--speaker-4);
+  --color-speaker-5: var(--speaker-5);
+  --color-speaker-6: var(--speaker-6);
+  --color-speaker-7: var(--speaker-7);
+  --color-speaker-8: var(--speaker-8);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+}
+
+/*
+  FieldScribe cloud mirror — same ink-navy instrument panel as the Mac app.
+  Burgundy is reserved for speaker identity and primary actions. Dark only.
+*/
+:root {
+  color-scheme: dark;
+  --background: #0c0f14;
+  --foreground: #edeae3;
+  --card: #12161d;
+  --card-foreground: #edeae3;
+  --primary: #a13648;
+  --primary-foreground: #f6eee9;
+  --secondary: #1a2029;
+  --secondary-foreground: #edeae3;
+  --muted: #1a2029;
+  --muted-foreground: #8b93a1;
+  --border: rgba(237, 234, 227, 0.08);
+  --input: rgba(237, 234, 227, 0.14);
+  --ring: rgba(192, 75, 92, 0.55);
+  --flare: #c04b5c;
+  --flare-deep: #58212b;
+  --ok: #4ade80;
+  --danger: #f87171;
+  --radius: 0.625rem;
+  --speaker-1: #c04b5c;
+  --speaker-2: #6f92b8;
+  --speaker-3: #8fae7e;
+  --speaker-4: #c29a5b;
+  --speaker-5: #9d84bd;
+  --speaker-6: #6aa6a0;
+  --speaker-7: #b97fa0;
+  --speaker-8: #8b93a1;
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+    outline-color: color-mix(in srgb, var(--ring) 50%, transparent);
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-inter), sans-serif;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-bricolage), sans-serif;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--flare) 30%, transparent);
+  }
+  /* Search deep-links land on #u-<id>: flash the target utterance. */
+  [id^="u-"]:target {
+    background: color-mix(in srgb, var(--flare-deep) 55%, transparent);
+    border-radius: 3px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
