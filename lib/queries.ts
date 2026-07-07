@@ -35,7 +35,14 @@ export function getUtterances(recordingId: string) {
 }
 
 export function getSpeakers(recordingId: string) {
-  return db.select().from(speakers).where(eq(speakers.recordingId, recordingId)).all();
+  // rowid order = first-appearance order (the worker inserts speakers as they
+  // first speak), so "Speaker 1" is always the first voice heard.
+  return db
+    .select()
+    .from(speakers)
+    .where(eq(speakers.recordingId, recordingId))
+    .orderBy(sql`rowid`)
+    .all();
 }
 
 export function getSummary(recordingId: string) {
