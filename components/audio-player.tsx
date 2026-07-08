@@ -19,7 +19,7 @@ export function AudioPlayer({
   onSeek: (sec: number) => void;
 }) {
   return (
-    <div className="sticky bottom-0 z-20 -mx-4 border-t bg-background/95 px-4 py-3 backdrop-blur md:-mx-8 md:px-8">
+    <div className="shrink-0 -mx-4 border-t bg-background/95 px-4 py-3 md:-mx-8 md:px-8">
       <div className="mx-auto flex max-w-5xl items-center gap-4">
         <Button size="icon" onClick={onToggle} aria-label={playing ? "Pause" : "Play"}>
           {playing ? <Pause className="size-4" /> : <Play className="size-4" />}

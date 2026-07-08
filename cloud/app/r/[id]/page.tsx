@@ -35,51 +35,61 @@ export default async function RecordingPage({ params }: { params: Promise<{ id: 
   });
 
   return (
-    <div className="space-y-6">
-      <div className="min-w-0 space-y-1">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1 font-mono text-[11px] text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <ArrowLeft className="size-3" /> library
-        </Link>
-        <h1 className="truncate text-xl font-semibold tracking-tight">{recording.title}</h1>
-        <p className="font-mono text-[11px] text-muted-foreground">
-          {formatDate(recording.recorded_at)}
-          {recording.duration_sec != null && <> · {formatDuration(recording.duration_sec)}</>}
-          {recording.language && <> · {recording.language}</>}
-        </p>
-      </div>
-
-      <div className="sticky top-14 z-20 -mx-4 bg-background/95 px-4 pb-2 pt-1 backdrop-blur md:-mx-8 md:px-8">
-        <Timeline
-          utterances={utterances}
-          orderedLabels={orderedLabels}
-          names={names}
-          durationSec={recording.duration_sec ?? 0}
-        />
-      </div>
-
-      <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_260px]">
-        <Transcript utterances={utterances} orderedLabels={orderedLabels} names={names} />
-        <aside className="space-y-6 md:order-last">
-          <section className="space-y-2">
-            <Heading>Speakers</Heading>
-            <ul className="space-y-1.5">
-              {speakers.map((s) => (
-                <li key={s.speaker_label} className="flex items-center gap-2.5 text-sm">
-                  <span className={cn("size-2.5 shrink-0 rounded-full", speakerBg(s.position))} />
-                  {names[s.speaker_label]}
-                </li>
-              ))}
-            </ul>
-          </section>
-          <SummaryPanel summary={summary} />
-          <p className="flex items-start gap-2 rounded-lg border border-dashed px-3 py-2.5 text-xs text-muted-foreground">
-            <MonitorSpeaker className="mt-0.5 size-3.5 shrink-0" />
-            Audio playback and edits live on the Mac Studio.
+    // App-style fixed layout: title + graph never move; only the transcript
+    // pane below scrolls.
+    <div className="fixed inset-x-0 top-14 bottom-0 flex flex-col overflow-hidden">
+      <div className="mx-auto flex h-full w-full max-w-5xl min-h-0 flex-col px-4 md:px-8">
+        <div className="min-w-0 shrink-0 space-y-1 pt-5 pb-3">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1 font-mono text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ArrowLeft className="size-3" /> library
+          </Link>
+          <h1 className="truncate text-xl font-semibold tracking-tight">{recording.title}</h1>
+          <p className="font-mono text-[11px] text-muted-foreground">
+            {formatDate(recording.recorded_at)}
+            {recording.duration_sec != null && <> · {formatDuration(recording.duration_sec)}</>}
+            {recording.language && <> · {recording.language}</>}
           </p>
-        </aside>
+        </div>
+
+        {/* Frozen graph — never scrolls */}
+        <div className="shrink-0 pb-3">
+          <Timeline
+            utterances={utterances}
+            orderedLabels={orderedLabels}
+            names={names}
+            durationSec={recording.duration_sec ?? 0}
+          />
+        </div>
+
+        {/* Only this pane scrolls */}
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pb-6 pt-1">
+          <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_260px]">
+            <Transcript utterances={utterances} orderedLabels={orderedLabels} names={names} />
+            <aside className="space-y-6 md:order-last">
+              <section className="space-y-2">
+                <Heading>Speakers</Heading>
+                <ul className="space-y-1.5">
+                  {speakers.map((s) => (
+                    <li key={s.speaker_label} className="flex items-center gap-2.5 text-sm">
+                      <span
+                        className={cn("size-2.5 shrink-0 rounded-full", speakerBg(s.position))}
+                      />
+                      {names[s.speaker_label]}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+              <SummaryPanel summary={summary} />
+              <p className="flex items-start gap-2 rounded-lg border border-dashed px-3 py-2.5 text-xs text-muted-foreground">
+                <MonitorSpeaker className="mt-0.5 size-3.5 shrink-0" />
+                Audio playback and edits live on the Mac Studio.
+              </p>
+            </aside>
+          </div>
+        </div>
       </div>
     </div>
   );

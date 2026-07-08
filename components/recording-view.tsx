@@ -127,8 +127,11 @@ export function RecordingView({ id }: { id: string }) {
   const processing = isActive(recording.status);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-3">
+    // App-style fixed layout: header/title/graph/player never move —
+    // only the transcript pane scrolls.
+    <div className="fixed inset-x-0 top-14 bottom-0 flex flex-col overflow-hidden">
+      <div className="mx-auto flex h-full w-full max-w-5xl min-h-0 flex-col px-4 md:px-8">
+      <div className="flex shrink-0 flex-wrap items-start justify-between gap-x-4 gap-y-3 pt-5 pb-3">
         <div className="min-w-0 flex-1 basis-64 space-y-1">
           <Link
             href="/"
@@ -168,13 +171,13 @@ export function RecordingView({ id }: { id: string }) {
       </div>
 
       {recording.status === "failed" && recording.error && (
-        <div className="rounded-lg border border-danger/30 bg-danger/5 px-4 py-3 text-sm text-danger">
+        <div className="mb-3 shrink-0 rounded-lg border border-danger/30 bg-danger/5 px-4 py-3 text-sm text-danger">
           {recording.error}
         </div>
       )}
 
       {processing && (
-        <div className="rounded-xl border bg-card px-5 py-10 text-center">
+        <div className="shrink-0 rounded-xl border bg-card px-5 py-10 text-center">
           <p className="font-mono text-xs text-muted-foreground animate-pulse">
             {STATUS_LABEL[recording.status]}…
           </p>
@@ -186,7 +189,8 @@ export function RecordingView({ id }: { id: string }) {
 
       {utterances.length > 0 && (
         <>
-          <div className="sticky top-14 z-20 -mx-4 bg-background/95 px-4 pb-2 pt-1 backdrop-blur md:-mx-8 md:px-8">
+          {/* Frozen graph — never scrolls */}
+          <div className="shrink-0 pb-3">
             <Timeline
               utterances={utterances}
               orderedLabels={orderedLabels}
@@ -197,23 +201,26 @@ export function RecordingView({ id }: { id: string }) {
               onSelect={selectUtterance}
             />
           </div>
-          <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_260px]">
-            <Transcript
-              utterances={utterances}
-              orderedLabels={orderedLabels}
-              names={names}
-              currentTime={currentTime}
-              onSeek={seek}
-            />
-            <aside className="space-y-6 md:order-last">
-              <SpeakerRail
-                recordingId={id}
-                speakers={speakers}
+          {/* Only this pane scrolls */}
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pb-6 pt-1">
+            <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_260px]">
+              <Transcript
+                utterances={utterances}
                 orderedLabels={orderedLabels}
-                onRenamed={refresh}
+                names={names}
+                currentTime={currentTime}
+                onSeek={seek}
               />
-              <SummaryPanel summary={summary} skipped={recording.skipSummary === 1} />
-            </aside>
+              <aside className="space-y-6 md:order-last">
+                <SpeakerRail
+                  recordingId={id}
+                  speakers={speakers}
+                  orderedLabels={orderedLabels}
+                  onRenamed={refresh}
+                />
+                <SummaryPanel summary={summary} skipped={recording.skipSummary === 1} />
+              </aside>
+            </div>
           </div>
         </>
       )}
@@ -236,6 +243,7 @@ export function RecordingView({ id }: { id: string }) {
           onSeek={seek}
         />
       )}
+      </div>
     </div>
   );
 }
