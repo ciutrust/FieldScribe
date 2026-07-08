@@ -1,11 +1,14 @@
+"use client";
+
 import type { FsUtterance } from "@/lib/types";
 import { formatClock, speakerBg } from "@/lib/format";
+import { scrollToUtterance } from "@/lib/scroll";
 import { cn } from "@/lib/utils";
 
 /**
  * Read-only diarization timeline: one lane per speaker, every utterance a
- * time-positioned segment. Clicking a segment jumps to that utterance in the
- * transcript (anchor link) — audio playback lives on the Mac Studio.
+ * time-positioned segment. Clicking a segment centers that utterance in the
+ * transcript while the graph stays pinned — audio playback lives on the Mac.
  */
 export function Timeline({
   utterances,
@@ -31,9 +34,9 @@ export function Timeline({
               {utterances
                 .filter((u) => u.speaker_label === label)
                 .map((u) => (
-                  <a
+                  <button
                     key={u.id}
-                    href={`#u-${u.id}`}
+                    onClick={() => scrollToUtterance(u.id)}
                     title={`${names[label]} · ${formatClock(u.start_sec)}`}
                     className={cn(
                       "absolute top-0 h-full rounded-[3px] opacity-80 transition-opacity hover:opacity-100",

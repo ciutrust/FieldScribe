@@ -23,7 +23,14 @@ burgundy (`--flare: #c04b5c`) where FieldNotes burns orange.
 - Pipeline statuses: `queued → converting → transcribing → diarizing → summarizing
   → done | failed`. On worker startup, any mid-pipeline status is requeued.
 - The engine is wrapped so a hosted API (AssemblyAI) could replace it without
-  touching the app. Future v2 = hybrid: this worker + Supabase/Vercel library.
+  touching the app.
+- v2 hybrid: `cloud/` (own Next app, Vercel Root Directory=cloud, deployed at
+  ac-fieldscribe.vercel.app) reads fs_* tables on FieldNotes' Supabase project;
+  `scripts/sync.mjs --watch` (part of `npm run dev`) pushes done recordings up.
+- v2.1 remote upload: cloud app uploads audio to private bucket `fs-inbox` +
+  `fs_upload_queue` row (row id = future recording id); sync.mjs downloads it,
+  inserts a queued local recording, and deletes the cloud object immediately
+  after the safe local write. Queue row is deleted when the transcript syncs.
 
 ## Stack & conventions
 

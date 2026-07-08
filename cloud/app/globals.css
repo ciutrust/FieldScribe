@@ -122,6 +122,20 @@
     background: color-mix(in srgb, var(--flare-deep) 55%, transparent);
     border-radius: 3px;
   }
+  /* Timeline clicks flash the target utterance (class-driven twin of :target). */
+  .u-flash {
+    animation: u-flash 1.8s ease-out;
+    border-radius: 3px;
+  }
+  @keyframes u-flash {
+    0%,
+    60% {
+      background-color: color-mix(in srgb, var(--flare-deep) 55%, transparent);
+    }
+    100% {
+      background-color: transparent;
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

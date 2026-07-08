@@ -17,6 +17,7 @@ export function Timeline({
   durationSec,
   currentTime,
   onSeek,
+  onSelect,
 }: {
   utterances: Utterance[];
   orderedLabels: string[];
@@ -24,6 +25,8 @@ export function Timeline({
   durationSec: number;
   currentTime: number;
   onSeek: (sec: number) => void;
+  /** Segment click: seek + bring that utterance into view in the transcript. */
+  onSelect: (u: Utterance) => void;
 }) {
   const trackRef = useRef<HTMLDivElement>(null);
   if (durationSec <= 0 || utterances.length === 0) return null;
@@ -58,7 +61,7 @@ export function Timeline({
                     key={u.id}
                     onClick={(e) => {
                       e.stopPropagation();
-                      onSeek(u.startSec);
+                      onSelect(u);
                     }}
                     title={`${names[label]} · ${formatClock(u.startSec)}`}
                     className={cn(

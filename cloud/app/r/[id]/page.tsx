@@ -51,12 +51,14 @@ export default async function RecordingPage({ params }: { params: Promise<{ id: 
         </p>
       </div>
 
-      <Timeline
-        utterances={utterances}
-        orderedLabels={orderedLabels}
-        names={names}
-        durationSec={recording.duration_sec ?? 0}
-      />
+      <div className="sticky top-14 z-20 -mx-4 bg-background/95 px-4 pb-2 pt-1 backdrop-blur md:-mx-8 md:px-8">
+        <Timeline
+          utterances={utterances}
+          orderedLabels={orderedLabels}
+          names={names}
+          durationSec={recording.duration_sec ?? 0}
+        />
+      </div>
 
       <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_260px]">
         <Transcript utterances={utterances} orderedLabels={orderedLabels} names={names} />

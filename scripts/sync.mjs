@@ -155,6 +155,58 @@ async function pushRecording(supabase, db, rec) {
   );
 }
 
+// v2.1 inbox: download phone uploads, hand them to the worker, delete the
+// cloud object the moment the file is safely on this Mac.
+async function pullUploads(supabase, db) {
+  const { data: rows, error } = await supabase
+    .from("fs_upload_queue")
+    .select("*")
+    .in("status", ["queued", "error"]);
+  if (error) {
+    log(`inbox check failed: ${error.message}`);
+    return;
+  }
+  for (const row of rows ?? []) {
+    try {
+      const { data: blob, error: dlError } = await supabase.storage
+        .from("fs-inbox")
+        .download(row.object_path);
+      if (dlError) throw new Error(`download: ${dlError.message}`);
+      const buf = Buffer.from(await blob.arrayBuffer());
+      if (buf.length === 0) throw new Error("downloaded 0 bytes");
+
+      const ext =
+        path.extname(row.object_path).slice(1).toLowerCase().replace(/[^a-z0-9]/g, "") || "bin";
+      const dir = path.join(ROOT, "data", "audio", row.id);
+      fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(path.join(dir, `original.${ext}`), buf);
+
+      const now = new Date().toISOString();
+      db.prepare(
+        `INSERT OR IGNORE INTO recordings
+           (id, title, original_filename, stored_ext, status, skip_summary, created_at, updated_at)
+         VALUES (?, ?, ?, ?, 'queued', 0, ?, ?)`
+      ).run(row.id, row.title, row.original_filename, ext, now, now);
+
+      await supabase
+        .from("fs_upload_queue")
+        .update({ status: "downloaded", error: null })
+        .eq("id", row.id);
+      const { error: rmError } = await supabase.storage
+        .from("fs-inbox")
+        .remove([row.object_path]);
+      if (rmError) log(`WARN: cloud copy of ${row.object_path} not deleted: ${rmError.message}`);
+      log(`pulled upload "${row.title}" (${row.id.slice(0, 8)}) — cloud copy deleted`);
+    } catch (e) {
+      log(`inbox pull FAILED "${row.title}": ${e.message}`);
+      await supabase
+        .from("fs_upload_queue")
+        .update({ status: "error", error: String(e.message).slice(0, 500) })
+        .eq("id", row.id);
+    }
+  }
+}
+
 async function syncOnce(supabase, db) {
   const dirty = dirtyRecordings(db);
   if (dirty.length === 0) return { pushed: 0, failed: 0 };
@@ -165,6 +217,8 @@ async function syncOnce(supabase, db) {
       await pushRecording(supabase, db, rec);
       pushed += 1;
       log(`pushed "${rec.title}" (${rec.id.slice(0, 8)})`);
+      // If this recording arrived via the cloud inbox, its ghost entry is done.
+      await supabase.from("fs_upload_queue").delete().eq("id", rec.id);
     } catch (e) {
       failed += 1;
       log(`FAILED "${rec.title}": ${e.message}`);
@@ -206,14 +260,16 @@ async function main() {
   }
 
   if (!WATCH) {
+    await pullUploads(supabase, db);
     const { pushed, failed } = await syncOnce(supabase, db);
     log(`done — ${pushed} pushed, ${failed} failed.`);
     process.exit(failed > 0 ? 1 : 0);
   }
 
-  log("watching for finished recordings (60s poll)…");
+  log("watching for finished recordings + cloud inbox (60s poll)…");
   for (;;) {
     try {
+      await pullUploads(supabase, db);
       await syncOnce(supabase, db);
     } catch (e) {
       log(`sync pass failed: ${e.message}`);

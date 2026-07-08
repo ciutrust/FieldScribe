@@ -76,6 +76,18 @@ export function RecordingView({ id }: { id: string }) {
     if (audio.paused) audio.play().catch(() => {});
   }, []);
 
+  // Timeline segment click: seek AND center that utterance in the transcript,
+  // so the pinned graph never leaves view while the text jumps to the moment.
+  const selectUtterance = useCallback(
+    (u: Utterance) => {
+      seek(u.startSec);
+      document
+        .getElementById(`u-${u.id}`)
+        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+    },
+    [seek]
+  );
+
   const toggle = useCallback(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -174,14 +186,17 @@ export function RecordingView({ id }: { id: string }) {
 
       {utterances.length > 0 && (
         <>
-          <Timeline
-            utterances={utterances}
-            orderedLabels={orderedLabels}
-            names={names}
-            durationSec={durationSec}
-            currentTime={currentTime}
-            onSeek={seek}
-          />
+          <div className="sticky top-14 z-20 -mx-4 bg-background/95 px-4 pb-2 pt-1 backdrop-blur md:-mx-8 md:px-8">
+            <Timeline
+              utterances={utterances}
+              orderedLabels={orderedLabels}
+              names={names}
+              durationSec={durationSec}
+              currentTime={currentTime}
+              onSeek={seek}
+              onSelect={selectUtterance}
+            />
+          </div>
           <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_260px]">
             <Transcript
               utterances={utterances}

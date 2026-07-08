@@ -53,6 +53,7 @@ export function Transcript({
               return (
                 <Fragment key={u.id}>
                   <span
+                    id={`u-${u.id}`}
                     onClick={() => onSeek(u.startSec)}
                     className={cn(
                       "cursor-pointer rounded-sm px-0.5 -mx-0.5 transition-colors hover:bg-secondary",
