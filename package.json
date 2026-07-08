@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "concurrently -n web,worker,sync -c blue,magenta,yellow \"next dev\" \"npm run -s worker\" \"npm run -s sync:watch\"",
-    "dev:web": "next dev",
+    "dev:web": "next dev -p 3010",
     "worker": "cd worker && uv run python worker.py",
     "sync": "node scripts/sync.mjs",
     "sync:watch": "node scripts/sync.mjs --watch",
