@@ -36,10 +36,41 @@
 }
 
 /*
-  FieldScribe cloud mirror — same ink-navy instrument panel as the Mac app.
-  Burgundy is reserved for speaker identity and primary actions. Dark only.
+  FieldScribe cloud mirror — ink-navy instrument panel (dark, default) and
+  field-notebook paper (light), same tokens as the Mac app.
+  Burgundy is reserved for speaker identity and primary actions.
 */
 :root {
+  color-scheme: light;
+  --background: #f4f1e8;
+  --foreground: #1c222b;
+  --card: #fbf9f3;
+  --card-foreground: #1c222b;
+  --primary: #8e2f3f;
+  --primary-foreground: #fbf9f3;
+  --secondary: #eae6da;
+  --secondary-foreground: #1c222b;
+  --muted: #eae6da;
+  --muted-foreground: #5c6470;
+  --border: rgba(28, 34, 43, 0.12);
+  --input: rgba(28, 34, 43, 0.18);
+  --ring: rgba(142, 47, 63, 0.45);
+  --flare: #9d3244;
+  --flare-deep: #e9cdd3;
+  --ok: #15803d;
+  --danger: #b91c1c;
+  --radius: 0.625rem;
+  --speaker-1: #9d3244;
+  --speaker-2: #446a94;
+  --speaker-3: #587a4e;
+  --speaker-4: #8a6425;
+  --speaker-5: #6b5691;
+  --speaker-6: #33736c;
+  --speaker-7: #8f4f74;
+  --speaker-8: #5c6470;
+}
+
+.dark {
   color-scheme: dark;
   --background: #0c0f14;
   --foreground: #edeae3;
@@ -58,7 +89,6 @@
   --flare-deep: #58212b;
   --ok: #4ade80;
   --danger: #f87171;
-  --radius: 0.625rem;
   --speaker-1: #c04b5c;
   --speaker-2: #6f92b8;
   --speaker-3: #8fae7e;

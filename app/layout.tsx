@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Inter, JetBrains_Mono } from "next/font/google";
+import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Toaster } from "@/components/ui/sonner";
 import { Wordmark } from "@/components/wordmark";
 import Link from "next/link";
@@ -26,7 +28,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0c0f14",
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#0c0f14" },
+    { media: "(prefers-color-scheme: light)", color: "#f4f1e8" },
+  ],
 };
 
 export default function RootLayout({
@@ -37,23 +42,29 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`dark ${bricolage.variable} ${inter.variable} ${jetbrains.variable} h-full antialiased`}
+      suppressHydrationWarning
+      className={`${bricolage.variable} ${inter.variable} ${jetbrains.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <header className="sticky top-0 z-30 border-b bg-background/90 backdrop-blur">
-          <div className="mx-auto flex h-14 w-full max-w-5xl items-center justify-between px-4 md:px-8">
-            <Link href="/">
-              <Wordmark />
-            </Link>
-            <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-              on this Mac
-            </span>
-          </div>
-        </header>
-        <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 md:px-8 md:py-8">
-          {children}
-        </main>
-        <Toaster position="top-center" />
+        <ThemeProvider>
+          <header className="sticky top-0 z-30 border-b bg-background/90 backdrop-blur">
+            <div className="mx-auto flex h-14 w-full max-w-5xl items-center justify-between px-4 md:px-8">
+              <Link href="/">
+                <Wordmark />
+              </Link>
+              <div className="flex items-center gap-5">
+                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                  on this Mac
+                </span>
+                <ThemeToggle />
+              </div>
+            </div>
+          </header>
+          <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 md:px-8 md:py-8">
+            {children}
+          </main>
+          <Toaster position="top-center" />
+        </ThemeProvider>
       </body>
     </html>
   );
