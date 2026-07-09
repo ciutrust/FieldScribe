@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Inter, JetBrains_Mono } from "next/font/google";
 import Link from "next/link";
-import { FieldToolsMark } from "@/components/fieldtools-mark";
 import { SignOut } from "@/components/sign-out";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -72,7 +71,6 @@ export default function RootLayout({
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-[10.5px] font-mono text-muted-foreground/70 hover:text-muted-foreground transition-colors"
             >
-              <FieldToolsMark size={13} letters={false} />
               a FieldTools.ai product
             </a>
           </footer>

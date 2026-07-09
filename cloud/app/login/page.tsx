@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { FieldToolsMark } from "@/components/fieldtools-mark";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
@@ -86,7 +85,6 @@ export default function LoginPage() {
           rel="noopener noreferrer"
           className="mt-6 flex items-center justify-center gap-2 text-[10.5px] font-mono text-muted-foreground/70 hover:text-muted-foreground transition-colors"
         >
-          <FieldToolsMark size={14} letters={false} />
           a FieldTools.ai product
         </a>
       </div>
