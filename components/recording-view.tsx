@@ -11,6 +11,7 @@ import { SpeakerRail } from "@/components/speaker-rail";
 import { StatusChip } from "@/components/status-chip";
 import { SummaryPanel } from "@/components/summary-panel";
 import { Timeline } from "@/components/timeline";
+import { TitleEditor } from "@/components/title-editor";
 import { Transcript } from "@/components/transcript";
 import { defaultSpeakerName, formatDate, formatDuration } from "@/lib/format";
 import { STATUS_LABEL, isActive } from "@/lib/status";
@@ -139,7 +140,7 @@ export function RecordingView({ id }: { id: string }) {
           >
             <ArrowLeft className="size-3" /> library
           </Link>
-          <h1 className="truncate text-xl font-semibold tracking-tight">{recording.title}</h1>
+          <TitleEditor recordingId={id} title={recording.title} onSaved={refresh} />
           <p className="font-mono text-[11px] text-muted-foreground">
             {formatDate(recording.createdAt)}
             {recording.durationSec != null && <> · {formatDuration(recording.durationSec)}</>}
