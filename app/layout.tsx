@@ -23,7 +23,7 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "FieldScribe",
+  title: "FieldScribe (local)",
   description: "Local transcription with speaker separation — who said what, on your own machine.",
 };
 
