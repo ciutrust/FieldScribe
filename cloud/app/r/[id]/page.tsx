@@ -4,8 +4,10 @@ import { ArrowLeft, MonitorSpeaker } from "lucide-react";
 import { SummaryPanel, Heading } from "@/components/summary-panel";
 import { Timeline } from "@/components/timeline";
 import { Transcript } from "@/components/transcript";
+import { TranscriptActions } from "@/components/transcript-actions";
 import { createClient } from "@/lib/supabase/server";
 import type { FsRecording, FsSpeaker, FsSummary, FsUtterance } from "@/lib/types";
+import { buildRecordingMarkdown, exportFilename } from "@/lib/export";
 import { defaultSpeakerName, formatDate, formatDuration, speakerBg } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -34,24 +36,35 @@ export default async function RecordingPage({ params }: { params: Promise<{ id: 
     names[s.speaker_label] = s.display_name?.trim() || defaultSpeakerName(s.position);
   });
 
+  const markdown = buildRecordingMarkdown(recording, utterances, names, summary);
+
   return (
     // App-style fixed layout: title + graph never move; only the transcript
     // pane below scrolls.
     <div className="fixed inset-x-0 top-14 bottom-0 flex flex-col overflow-hidden">
       <div className="mx-auto flex h-full w-full max-w-5xl min-h-0 flex-col px-4 md:px-8">
-        <div className="min-w-0 shrink-0 space-y-1 pt-5 pb-3">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1 font-mono text-[11px] text-muted-foreground transition-colors hover:text-foreground"
-          >
-            <ArrowLeft className="size-3" /> library
-          </Link>
-          <h1 className="truncate text-xl font-semibold tracking-tight">{recording.title}</h1>
-          <p className="font-mono text-[11px] text-muted-foreground">
-            {formatDate(recording.recorded_at)}
-            {recording.duration_sec != null && <> · {formatDuration(recording.duration_sec)}</>}
-            {recording.language && <> · {recording.language}</>}
-          </p>
+        <div className="flex shrink-0 flex-wrap items-start justify-between gap-x-4 gap-y-3 pt-5 pb-3">
+          <div className="min-w-0 flex-1 basis-64 space-y-1">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1 font-mono text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <ArrowLeft className="size-3" /> library
+            </Link>
+            <h1 className="truncate text-xl font-semibold tracking-tight">{recording.title}</h1>
+            <p className="font-mono text-[11px] text-muted-foreground">
+              {formatDate(recording.recorded_at)}
+              {recording.duration_sec != null && <> · {formatDuration(recording.duration_sec)}</>}
+              {recording.language && <> · {recording.language}</>}
+            </p>
+          </div>
+          {utterances.length > 0 && (
+            <TranscriptActions
+              markdown={markdown}
+              filename={exportFilename(recording.title, "md")}
+              className="pt-1"
+            />
+          )}
         </div>
 
         {/* Frozen graph — never scrolls */}
