@@ -53,9 +53,17 @@ export default function RootLayout({
                 <Wordmark />
               </Link>
               <div className="flex items-center gap-5">
-                <span className="hidden font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground sm:inline">
-                  synced from the studio
-                </span>
+                <div className="hidden text-right leading-tight sm:block">
+                  <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                    synced from the studio
+                  </div>
+                  <a
+                    href="http://localhost:3010"
+                    className="font-mono text-[10px] text-muted-foreground/70 transition-colors hover:text-flare"
+                  >
+                    localhost:3010
+                  </a>
+                </div>
                 <ThemeToggle />
                 <SignOut />
               </div>
