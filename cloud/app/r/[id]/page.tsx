@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, MonitorSpeaker } from "lucide-react";
+import { RecordingPager } from "@/components/recording-pager";
 import { SummaryPanel, Heading } from "@/components/summary-panel";
 import { Timeline } from "@/components/timeline";
 import { Transcript } from "@/components/transcript";
@@ -17,15 +18,22 @@ export default async function RecordingPage({ params }: { params: Promise<{ id: 
   const { id } = await params;
   const supabase = await createClient();
 
-  const [recordingRes, utterancesRes, speakersRes, summaryRes] = await Promise.all([
+  const [recordingRes, utterancesRes, speakersRes, summaryRes, orderRes] = await Promise.all([
     supabase.from("fs_recordings").select("*").eq("id", id).maybeSingle(),
     supabase.from("fs_utterances").select("*").eq("recording_id", id).order("start_sec"),
     supabase.from("fs_speakers").select("*").eq("recording_id", id).order("position"),
     supabase.from("fs_summaries").select("*").eq("recording_id", id).maybeSingle(),
+    supabase.from("fs_recordings").select("id").order("recorded_at", { ascending: false }),
   ]);
 
   const recording = recordingRes.data as FsRecording | null;
   if (!recording) notFound();
+
+  // Prev/next in library order (newest first) for the pager.
+  const orderedIds = ((orderRes.data ?? []) as { id: string }[]).map((r) => r.id);
+  const idx = orderedIds.indexOf(id);
+  const prevId = idx > 0 ? orderedIds[idx - 1] : null;
+  const nextId = idx >= 0 && idx < orderedIds.length - 1 ? orderedIds[idx + 1] : null;
   const utterances = (utterancesRes.data ?? []) as FsUtterance[];
   const speakers = (speakersRes.data ?? []) as FsSpeaker[];
   const summary = (summaryRes.data as FsSummary | null) ?? null;
@@ -58,13 +66,15 @@ export default async function RecordingPage({ params }: { params: Promise<{ id: 
               {recording.language && <> · {recording.language}</>}
             </p>
           </div>
-          {utterances.length > 0 && (
-            <TranscriptActions
-              markdown={markdown}
-              filename={exportFilename(recording.title, "md")}
-              className="pt-1"
-            />
-          )}
+          <div className="flex shrink-0 flex-wrap items-center gap-x-3 gap-y-2 pt-1">
+            <RecordingPager prevId={prevId} nextId={nextId} />
+            {utterances.length > 0 && (
+              <TranscriptActions
+                markdown={markdown}
+                filename={exportFilename(recording.title, "md")}
+              />
+            )}
+          </div>
         </div>
 
         {/* Frozen graph — never scrolls */}

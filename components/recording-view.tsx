@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import type { Recording, Speaker, Summary, Utterance } from "@/db/schema";
 import { Button } from "@/components/ui/button";
 import { AudioPlayer } from "@/components/audio-player";
+import { RecordingPager } from "@/components/recording-pager";
 import { SpeakerRail } from "@/components/speaker-rail";
 import { StatusChip } from "@/components/status-chip";
 import { SummaryPanel } from "@/components/summary-panel";
@@ -25,7 +26,15 @@ type Detail = {
 
 const POLL_MS = 2500;
 
-export function RecordingView({ id }: { id: string }) {
+export function RecordingView({
+  id,
+  prevId,
+  nextId,
+}: {
+  id: string;
+  prevId: string | null;
+  nextId: string | null;
+}) {
   const [detail, setDetail] = useState<Detail | null>(null);
   const [missing, setMissing] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout>>(null);
@@ -147,7 +156,8 @@ export function RecordingView({ id }: { id: string }) {
             {recording.language && <> · {recording.language}</>}
           </p>
         </div>
-        <div className="flex shrink-0 items-center gap-3 pt-1">
+        <div className="flex shrink-0 flex-wrap items-center gap-x-3 gap-y-2 pt-1">
+          <RecordingPager prevId={prevId} nextId={nextId} />
           <StatusChip status={recording.status} />
           {recording.status === "failed" && (
             <Button size="sm" variant="secondary" onClick={retry}>

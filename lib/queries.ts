@@ -25,6 +25,22 @@ export function getRecording(id: string) {
   return db.select().from(recordings).where(eq(recordings.id, id)).get();
 }
 
+/** Neighbors in library order (newest first) for the recording pager.
+ * prev = the newer one above; next = the older one below. */
+export function getNeighborIds(id: string): { prevId: string | null; nextId: string | null } {
+  const ids = db
+    .select({ id: recordings.id })
+    .from(recordings)
+    .orderBy(desc(recordings.createdAt))
+    .all()
+    .map((r) => r.id);
+  const i = ids.indexOf(id);
+  return {
+    prevId: i > 0 ? ids[i - 1] : null,
+    nextId: i >= 0 && i < ids.length - 1 ? ids[i + 1] : null,
+  };
+}
+
 export function getUtterances(recordingId: string) {
   return db
     .select()
