@@ -13,6 +13,7 @@ const recording: Recording = {
   error: null,
   skipSummary: 0,
   enhanceAudio: 0,
+  forcedLanguage: null,
   createdAt: "2026-07-07T18:20:00Z",
   updatedAt: "2026-07-07T18:25:00Z",
   cloudSyncedAt: null,

@@ -24,6 +24,7 @@ export const recordings = sqliteTable("recordings", {
   error: text("error"),
   skipSummary: integer("skip_summary").notNull().default(0),
   enhanceAudio: integer("enhance_audio").notNull().default(0),
+  forcedLanguage: text("forced_language"),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),
   cloudSyncedAt: text("cloud_synced_at"),

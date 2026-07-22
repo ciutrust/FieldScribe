@@ -33,6 +33,9 @@ function createDb() {
   if (!cols.some((c) => c.name === "enhance_audio")) {
     sqlite.exec("ALTER TABLE recordings ADD COLUMN enhance_audio INTEGER NOT NULL DEFAULT 0");
   }
+  if (!cols.some((c) => c.name === "forced_language")) {
+    sqlite.exec("ALTER TABLE recordings ADD COLUMN forced_language TEXT");
+  }
   return drizzle(sqlite, { schema });
 }
 

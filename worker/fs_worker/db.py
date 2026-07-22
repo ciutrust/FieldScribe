@@ -26,6 +26,8 @@ def connect() -> sqlite3.Connection:
         conn.execute("ALTER TABLE recordings ADD COLUMN cloud_synced_at TEXT")
     if "enhance_audio" not in cols:
         conn.execute("ALTER TABLE recordings ADD COLUMN enhance_audio INTEGER NOT NULL DEFAULT 0")
+    if "forced_language" not in cols:
+        conn.execute("ALTER TABLE recordings ADD COLUMN forced_language TEXT")
     conn.commit()
     return conn
 

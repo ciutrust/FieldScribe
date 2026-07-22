@@ -261,6 +261,9 @@ async function main() {
   if (!cols.some((c) => c.name === "enhance_audio")) {
     db.exec("ALTER TABLE recordings ADD COLUMN enhance_audio INTEGER NOT NULL DEFAULT 0");
   }
+  if (!cols.some((c) => c.name === "forced_language")) {
+    db.exec("ALTER TABLE recordings ADD COLUMN forced_language TEXT");
+  }
 
   if (!WATCH) {
     await pullUploads(supabase, db);

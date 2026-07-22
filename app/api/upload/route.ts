@@ -22,6 +22,8 @@ export async function POST(request: NextRequest) {
     path.basename(file.name, path.extname(file.name));
   const skipSummary = form.get("skipSummary") === "1" ? 1 : 0;
   const enhanceAudio = form.get("enhanceAudio") === "1" ? 1 : 0;
+  const langField = form.get("language");
+  const forcedLanguage = langField === "en" || langField === "pt" ? langField : null;
 
   const dest = audioPath(id, ext);
   fs.mkdirSync(path.dirname(dest), { recursive: true });
@@ -36,6 +38,7 @@ export async function POST(request: NextRequest) {
       status: "queued",
       skipSummary,
       enhanceAudio,
+      forcedLanguage,
       createdAt: nowIso(),
       updatedAt: nowIso(),
     })

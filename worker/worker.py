@@ -33,7 +33,8 @@ def process(conn, recording) -> None:
     db.set_status(conn, rec_id, "transcribing")
     from fs_worker import asr  # lazy: mlx import is slow
 
-    words, language = asr.transcribe(wav, config.WHISPER_MODEL)
+    forced = recording["forced_language"] or None
+    words, language = asr.transcribe(wav, config.WHISPER_MODEL, language=forced)
     db.set_metadata(conn, rec_id, language=language)
     log(f"  transcribed {len(words)} words (language={language})")
 

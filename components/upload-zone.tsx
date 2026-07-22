@@ -12,6 +12,7 @@ export function UploadZone({ onUploaded, hero }: { onUploaded: () => void; hero:
   const [uploading, setUploading] = useState(false);
   const [skipSummary, setSkipSummary] = useState(false);
   const [enhanceAudio, setEnhanceAudio] = useState(false);
+  const [language, setLanguage] = useState("auto");
 
   async function upload(files: FileList | File[]) {
     const list = Array.from(files);
@@ -22,6 +23,7 @@ export function UploadZone({ onUploaded, hero }: { onUploaded: () => void; hero:
       body.append("file", file);
       if (skipSummary) body.append("skipSummary", "1");
       if (enhanceAudio) body.append("enhanceAudio", "1");
+      if (language !== "auto") body.append("language", language);
       try {
         const res = await fetch("/api/upload", { method: "POST", body });
         if (!res.ok) throw new Error((await res.json()).error ?? res.statusText);
@@ -100,6 +102,18 @@ export function UploadZone({ onUploaded, hero }: { onUploaded: () => void; hero:
               className="accent-[var(--flare)]"
             />
             Boost distant audio
+          </label>
+          <label className="flex items-center gap-1.5 text-xs text-muted-foreground select-none">
+            Language
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              className="rounded-md border bg-card px-1.5 py-1 text-xs outline-none focus:border-flare/50"
+            >
+              <option value="auto">Auto-detect</option>
+              <option value="en">English</option>
+              <option value="pt">Português</option>
+            </select>
           </label>
         </div>
       </div>
