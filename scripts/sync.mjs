@@ -258,6 +258,9 @@ async function main() {
   if (!cols.some((c) => c.name === "cloud_synced_at")) {
     db.exec("ALTER TABLE recordings ADD COLUMN cloud_synced_at TEXT");
   }
+  if (!cols.some((c) => c.name === "enhance_audio")) {
+    db.exec("ALTER TABLE recordings ADD COLUMN enhance_audio INTEGER NOT NULL DEFAULT 0");
+  }
 
   if (!WATCH) {
     await pullUploads(supabase, db);

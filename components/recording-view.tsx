@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Download, RotateCcw } from "lucide-react";
+import { ArrowLeft, Download, RotateCcw, Volume2 } from "lucide-react";
 import { toast } from "sonner";
 import type { Recording, Speaker, Summary, Utterance } from "@/db/schema";
 import { Button } from "@/components/ui/button";
@@ -113,6 +113,14 @@ export function RecordingView({
     } else toast.error("Could not retry.");
   }
 
+  async function reprocess() {
+    const res = await fetch(`/api/recordings/${id}/reprocess`, { method: "POST" });
+    if (res.ok) {
+      toast.success("Re-transcribing with the distant-audio boost…");
+      refresh();
+    } else toast.error("Couldn't re-transcribe.");
+  }
+
   if (missing) {
     return (
       <div className="py-16 text-center space-y-3">
@@ -177,6 +185,17 @@ export function RecordingView({
                 </a>
               </Button>
             </div>
+          )}
+          {(recording.status === "done" || recording.status === "failed") && (
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={reprocess}
+              title="Re-transcribe with a boost for quiet / far-from-mic audio"
+            >
+              <Volume2 className="size-3.5" />
+              {recording.enhanceAudio ? "Re-transcribe (boosted)" : "Boost audio"}
+            </Button>
           )}
         </div>
       </div>

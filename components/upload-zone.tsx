@@ -11,6 +11,7 @@ export function UploadZone({ onUploaded, hero }: { onUploaded: () => void; hero:
   const [dragOver, setDragOver] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [skipSummary, setSkipSummary] = useState(false);
+  const [enhanceAudio, setEnhanceAudio] = useState(false);
 
   async function upload(files: FileList | File[]) {
     const list = Array.from(files);
@@ -20,6 +21,7 @@ export function UploadZone({ onUploaded, hero }: { onUploaded: () => void; hero:
       const body = new FormData();
       body.append("file", file);
       if (skipSummary) body.append("skipSummary", "1");
+      if (enhanceAudio) body.append("enhanceAudio", "1");
       try {
         const res = await fetch("/api/upload", { method: "POST", body });
         if (!res.ok) throw new Error((await res.json()).error ?? res.statusText);
@@ -86,6 +88,18 @@ export function UploadZone({ onUploaded, hero }: { onUploaded: () => void; hero:
               className="accent-[var(--flare)]"
             />
             Skip AI summary
+          </label>
+          <label
+            className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer select-none"
+            title="Lift quiet, far-from-mic speech (e.g. doorbell/security clips)"
+          >
+            <input
+              type="checkbox"
+              checked={enhanceAudio}
+              onChange={(e) => setEnhanceAudio(e.target.checked)}
+              className="accent-[var(--flare)]"
+            />
+            Boost distant audio
           </label>
         </div>
       </div>

@@ -23,6 +23,7 @@ export const recordings = sqliteTable("recordings", {
   status: text("status").$type<RecordingStatus>().notNull().default("queued"),
   error: text("error"),
   skipSummary: integer("skip_summary").notNull().default(0),
+  enhanceAudio: integer("enhance_audio").notNull().default(0),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),
   cloudSyncedAt: text("cloud_synced_at"),

@@ -30,6 +30,9 @@ function createDb() {
   if (!cols.some((c) => c.name === "cloud_synced_at")) {
     sqlite.exec("ALTER TABLE recordings ADD COLUMN cloud_synced_at TEXT");
   }
+  if (!cols.some((c) => c.name === "enhance_audio")) {
+    sqlite.exec("ALTER TABLE recordings ADD COLUMN enhance_audio INTEGER NOT NULL DEFAULT 0");
+  }
   return drizzle(sqlite, { schema });
 }
 

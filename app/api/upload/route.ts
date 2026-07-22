@@ -21,6 +21,7 @@ export async function POST(request: NextRequest) {
     (form.get("title") as string | null)?.trim() ||
     path.basename(file.name, path.extname(file.name));
   const skipSummary = form.get("skipSummary") === "1" ? 1 : 0;
+  const enhanceAudio = form.get("enhanceAudio") === "1" ? 1 : 0;
 
   const dest = audioPath(id, ext);
   fs.mkdirSync(path.dirname(dest), { recursive: true });
@@ -34,6 +35,7 @@ export async function POST(request: NextRequest) {
       storedExt: ext,
       status: "queued",
       skipSummary,
+      enhanceAudio,
       createdAt: nowIso(),
       updatedAt: nowIso(),
     })

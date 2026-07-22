@@ -23,8 +23,11 @@ def process(conn, recording) -> None:
     log(f"processing {rec_id} ({recording['original_filename']})")
 
     # converting (status already set by claim_next)
+    enhance = bool(recording["enhance_audio"])
     duration = audio.probe_duration(src)
-    audio.to_wav_16k_mono(src, wav)
+    audio.to_wav_16k_mono(src, wav, enhance=enhance)
+    if enhance:
+        log("  distant-audio boost on")
     db.set_metadata(conn, rec_id, duration_sec=duration)
 
     db.set_status(conn, rec_id, "transcribing")

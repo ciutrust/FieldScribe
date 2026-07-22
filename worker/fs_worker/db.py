@@ -24,6 +24,8 @@ def connect() -> sqlite3.Connection:
     cols = {row["name"] for row in conn.execute("PRAGMA table_info(recordings)")}
     if "cloud_synced_at" not in cols:
         conn.execute("ALTER TABLE recordings ADD COLUMN cloud_synced_at TEXT")
+    if "enhance_audio" not in cols:
+        conn.execute("ALTER TABLE recordings ADD COLUMN enhance_audio INTEGER NOT NULL DEFAULT 0")
     conn.commit()
     return conn
 
